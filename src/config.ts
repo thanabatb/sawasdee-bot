@@ -17,6 +17,7 @@ function normalizePrivateKey(value: string): string {
 
 export const config = {
   port: Number(process.env.PORT ?? 3000),
+  adminSecret: process.env.ADMIN_SECRET ?? "",
   line: {
     channelAccessToken: requireEnv("LINE_CHANNEL_ACCESS_TOKEN"),
     channelSecret: requireEnv("LINE_CHANNEL_SECRET"),

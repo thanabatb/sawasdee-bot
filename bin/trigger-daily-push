@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+set -eu
+
+cd "$(dirname "$0")/.."
+
+if [ -f .env.local ]; then
+  set -a
+  . ./.env.local
+  set +a
+elif [ -f .env ]; then
+  set -a
+  . ./.env
+  set +a
+fi
+
+PORT="${PORT:-3000}"
+SECRET="${ADMIN_SECRET:-}"
+
+if [ -z "$SECRET" ]; then
+  echo "Error: ADMIN_SECRET is not set in .env.local"
+  exit 1
+fi
+
+echo "Triggering daily push..."
+curl -s -X POST "http://localhost:${PORT}/admin/push/daily" \
+  -H "x-admin-secret: ${SECRET}" \
+  | cat
+echo

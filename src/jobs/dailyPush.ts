@@ -2,7 +2,6 @@ import { LineBotClient } from "@line/bot-sdk";
 import cron from "node-cron";
 
 import { config } from "../config.js";
-import { buildTemplateImages } from "../line/messages.js";
 import { getAllUserIds } from "../repositories/userRepository.js";
 import { getDailyGreetingMessages } from "../services/greetingService.js";
 
@@ -13,11 +12,23 @@ const client = LineBotClient.fromChannelAccessToken({
 async function sendDailyPush(): Promise<void> {
   console.log("[daily-push] starting");
 
-  const messages = await getDailyGreetingMessages();
-  if (messages.length === 0) {
+  const images = await getDailyGreetingMessages();
+  if (images.length === 0) {
     console.log("[daily-push] no templates for today, skipping");
     return;
   }
+
+  const dayNames: Record<string, string> = {
+    Sun: "อาทิตย์", Mon: "จันทร์", Tue: "อังคาร", Wed: "พุธ",
+    Thu: "พฤหัสบดี", Fri: "ศุกร์", Sat: "เสาร์",
+  };
+  const weekday = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Bangkok", weekday: "short" }).format(new Date());
+  const dayName = dayNames[weekday] ?? "";
+
+  const messages = [
+    { type: "text" as const, text: `อรุณสวัสดิ์วัน${dayName}นะคะ ☀️\nขอให้สุขกาย สุขใจ ตลอดวันนะคะ 🙏` },
+    ...images,
+  ];
 
   const userIds = await getAllUserIds();
   console.log("[daily-push] sending to users", { count: userIds.length });
@@ -37,6 +48,8 @@ async function sendDailyPush(): Promise<void> {
 
   console.log("[daily-push] done", { sent, failed });
 }
+
+export { sendDailyPush };
 
 // 04:00 Bangkok time = 21:00 UTC (UTC+7)
 export function registerDailyPushJob(): void {
