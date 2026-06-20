@@ -1,6 +1,6 @@
 import { messagingApi } from "@line/bot-sdk";
 
-import { buildHelpMessage, buildOccasionSelectorCard, buildTemplateImages } from "../line/messages.js";
+import { buildDailyPreviewCard, buildHelpMessage, buildOccasionSelectorCard, buildTemplateImages } from "../line/messages.js";
 import { getDailyTemplates, getOccasionTemplates } from "../repositories/templateRepository.js";
 import type { GreetingTemplate } from "../types.js";
 
@@ -48,7 +48,11 @@ export async function getDailyGreetingMessages(): Promise<messagingApi.Message[]
   const dayOfWeek = todayInBangkok();
   const templates = await getDailyTemplates(dayOfWeek);
   console.log("[greeting] daily request", { dayOfWeek, templateCount: templates.length });
-  return buildTemplateResponse(templates);
+  if (templates.length === 0) {
+    return [{ type: "text", text: "ขณะนี้ยังไม่มีรูปในหมวดนี้นะคะ รอติดตามได้เลย 🙏" }];
+  }
+  const random = templates[Math.floor(Math.random() * templates.length)];
+  return [buildDailyPreviewCard(random)];
 }
 
 export async function getOccasionGreetingMessages(

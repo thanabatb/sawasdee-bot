@@ -7,6 +7,8 @@ import {
 import type { RequestHandler } from "express";
 
 import { config } from "../config.js";
+import { buildTemplateImages } from "../line/messages.js";
+import { getTemplateById } from "../repositories/templateRepository.js";
 import { upsertUser } from "../repositories/userRepository.js";
 import { resolveMessagesFromText } from "../services/greetingService.js";
 
@@ -19,8 +21,36 @@ const client = LineBotClient.fromChannelAccessToken({
   channelAccessToken: config.line.channelAccessToken,
 });
 
+async function handlePostback(event: webhook.PostbackEvent): Promise<void> {
+  if (!event.replyToken) return;
+  const params = new URLSearchParams(event.postback.data);
+  if (params.get("action") !== "send_image") return;
+
+  const templateId = params.get("templateId");
+  if (!templateId) return;
+
+  const template = await getTemplateById(templateId);
+  if (!template) {
+    await client.replyMessage({
+      replyToken: event.replyToken,
+      messages: [{ type: "text", text: "ไม่พบรูปนี้แล้วนะคะ ขอโทษด้วยนะคะ 🙏" }],
+    });
+    return;
+  }
+
+  await client.replyMessage({
+    replyToken: event.replyToken,
+    messages: buildTemplateImages([template]),
+  });
+}
+
 async function handleEvent(event: webhook.Event): Promise<void> {
   console.log("[line] incoming event", { type: event.type });
+
+  if (event.type === "postback") {
+    await handlePostback(event);
+    return;
+  }
 
   if (event.type !== "message" || event.message.type !== "text") {
     return;

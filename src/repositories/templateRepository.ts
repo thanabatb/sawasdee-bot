@@ -31,6 +31,12 @@ function mapTemplate(
   };
 }
 
+export async function getTemplateById(id: string): Promise<GreetingTemplate | null> {
+  const doc = await collection.doc(id).get();
+  if (!doc.exists) return null;
+  return mapTemplate(doc);
+}
+
 export async function getAllTemplates(): Promise<GreetingTemplate[]> {
   const snapshot = await collection.get();
   return snapshot.docs

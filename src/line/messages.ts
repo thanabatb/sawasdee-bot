@@ -124,6 +124,58 @@ export function buildOccasionSelectorCard(): messagingApi.FlexMessage {
   };
 }
 
+export function buildDailyPreviewCard(template: GreetingTemplate): messagingApi.FlexMessage {
+  return {
+    type: "flex",
+    altText: `รูปสวัสดีวันนี้ — ${template.title}`,
+    contents: {
+      type: "bubble",
+      hero: {
+        type: "image",
+        url: template.imageUrl,
+        size: "full",
+        aspectMode: "cover",
+        aspectRatio: "1:1",
+        action: {
+          type: "postback",
+          label: "รับรูป",
+          data: `action=send_image&templateId=${template.id}`,
+        },
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        spacing: "sm",
+        contents: [
+          {
+            type: "text",
+            text: template.title,
+            weight: "bold",
+            size: "md",
+            wrap: true,
+          },
+        ],
+      },
+      footer: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "button",
+            style: "primary",
+            color: "#06C755",
+            action: {
+              type: "postback",
+              label: "📥 รับรูปนี้เลย",
+              data: `action=send_image&templateId=${template.id}`,
+            },
+          },
+        ],
+      },
+    },
+  };
+}
+
 export function buildHelpMessage(): messagingApi.Message {
   return {
     type: "text",
