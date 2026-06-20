@@ -1,0 +1,38 @@
+[
+  {
+    "id": "mon-001",
+    "title": "สวัสดีวันจันทร์ สดใสรับสัปดาห์ใหม่",
+    "imageUrl": "https://example.com/images/monday-01.jpg",
+    "thumbnailUrl": "https://example.com/images/monday-01-thumb.jpg",
+    "category": "daily",
+    "dayOfWeek": 1,
+    "tags": ["flowers", "thai", "morning"],
+    "altText": "รูปสวัสดีวันจันทร์โทนสดใส",
+    "isActive": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "mon-002",
+    "title": "สุขกาย สุขใจ ตลอดวันจันทร์",
+    "imageUrl": "https://example.com/images/monday-02.jpg",
+    "thumbnailUrl": "https://example.com/images/monday-02-thumb.jpg",
+    "category": "daily",
+    "dayOfWeek": 1,
+    "tags": ["nature", "blessing"],
+    "altText": "รูปสวัสดีวันจันทร์แนวธรรมชาติ",
+    "isActive": true,
+    "sortOrder": 2
+  },
+  {
+    "id": "birthday-001",
+    "title": "สุขสันต์วันเกิด",
+    "imageUrl": "https://example.com/images/birthday-01.jpg",
+    "thumbnailUrl": "https://example.com/images/birthday-01-thumb.jpg",
+    "category": "occasion",
+    "occasionKey": "birthday",
+    "tags": ["birthday", "cake"],
+    "altText": "รูปอวยพรวันเกิด",
+    "isActive": true,
+    "sortOrder": 1
+  }
+]

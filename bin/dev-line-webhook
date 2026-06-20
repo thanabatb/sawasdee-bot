@@ -1,0 +1,93 @@
+#!/usr/bin/env sh
+
+set -eu
+
+cd "$(dirname "$0")/.."
+
+if [ -f .env.local ]; then
+  set -a
+  . ./.env.local
+  set +a
+elif [ -f .env ]; then
+  set -a
+  . ./.env
+  set +a
+fi
+
+PORT="${PORT:-3000}"
+WAIT_SECONDS="${WAIT_SECONDS:-120}"
+SERVER_LOG="/tmp/sawasdee-bot-server.log"
+TUNNEL_LOG="/tmp/sawasdee-bot-tunnel.log"
+
+if ! command -v npm >/dev/null 2>&1; then
+  echo "npm is not installed or not on PATH."
+  exit 1
+fi
+
+cleanup() {
+  if [ -n "${SERVER_PID:-}" ]; then
+    kill "$SERVER_PID" 2>/dev/null || true
+  fi
+  if [ -n "${TUNNEL_PID:-}" ]; then
+    kill "$TUNNEL_PID" 2>/dev/null || true
+  fi
+}
+
+trap cleanup EXIT INT TERM
+
+if curl -fsS "http://localhost:${PORT}/health" >/dev/null 2>&1; then
+  echo "Using existing local server on http://localhost:${PORT}"
+else
+  echo "Starting local LINE webhook server on http://localhost:${PORT} ..."
+  nohup npm run serve:local >"$SERVER_LOG" 2>&1 &
+  SERVER_PID=$!
+fi
+
+echo "Waiting for /health to become reachable..."
+for i in $(seq 1 "$WAIT_SECONDS"); do
+  if curl -fsS "http://localhost:${PORT}/health" >/dev/null 2>&1; then
+    break
+  fi
+
+  if [ "$i" -eq "$WAIT_SECONDS" ]; then
+    echo "Local webhook server did not become ready after ${WAIT_SECONDS} seconds."
+    cat "$SERVER_LOG" 2>/dev/null || true
+    exit 1
+  fi
+
+  sleep 1
+done
+
+echo "Starting public tunnel with ngrok..."
+rm -f "$TUNNEL_LOG"
+npx --yes localtunnel --port "$PORT" >"$TUNNEL_LOG" 2>&1 &
+TUNNEL_PID=$!
+
+echo "Waiting for tunnel URL..."
+for i in $(seq 1 60); do
+  TUNNEL_BASE_URL="$(sed -n 's/.*your url is: //p' "$TUNNEL_LOG" | tail -n 1)"
+  TUNNEL_URL="${TUNNEL_BASE_URL:+$TUNNEL_BASE_URL/webhook/line}"
+  if [ -n "$TUNNEL_URL" ]; then
+    echo
+    echo "LINE Messaging API webhook endpoint:"
+    echo "$TUNNEL_URL"
+    echo
+    echo "Paste that URL into LINE Developers > Messaging API > Webhook URL."
+    echo "Keep this process running while testing bot commands."
+    echo
+    wait "$TUNNEL_PID"
+    exit $?
+  fi
+
+  if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
+    echo "localtunnel exited before providing a URL."
+    cat "$TUNNEL_LOG" 2>/dev/null || true
+    exit 1
+  fi
+
+  sleep 1
+done
+
+echo "Timed out waiting for localtunnel URL."
+cat "$TUNNEL_LOG" 2>/dev/null || true
+exit 1
