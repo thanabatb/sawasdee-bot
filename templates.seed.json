@@ -106,5 +106,53 @@
     "altText": "รูปอวยพรวันเกิด",
     "isActive": true,
     "sortOrder": 1
+  },
+  {
+    "id": "rich-001",
+    "title": "ขอให้ร่ำรวย มีทรัพย์สินเงินทองมากมาย",
+    "imageUrl": "https://example.com/images/rich-01.jpg",
+    "thumbnailUrl": "https://example.com/images/rich-01-thumb.jpg",
+    "category": "occasion",
+    "occasionKey": "rich",
+    "tags": ["rich", "money", "blessing"],
+    "altText": "รูปอวยพรร่ำรวย",
+    "isActive": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "rich-002",
+    "title": "โชคดี มีโชค เงินทองไหลมาเทมา",
+    "imageUrl": "https://example.com/images/rich-02.jpg",
+    "thumbnailUrl": "https://example.com/images/rich-02-thumb.jpg",
+    "category": "occasion",
+    "occasionKey": "rich",
+    "tags": ["rich", "lucky", "blessing"],
+    "altText": "รูปอวยพรร่ำรวยโชคดี",
+    "isActive": true,
+    "sortOrder": 2
+  },
+  {
+    "id": "health-001",
+    "title": "ขอให้สุขภาพแข็งแรง ห่างไกลโรคภัย",
+    "imageUrl": "https://example.com/images/health-01.jpg",
+    "thumbnailUrl": "https://example.com/images/health-01-thumb.jpg",
+    "category": "occasion",
+    "occasionKey": "health",
+    "tags": ["health", "strong", "blessing"],
+    "altText": "รูปอวยพรสุขภาพดี",
+    "isActive": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "health-002",
+    "title": "สุขภาพดี อายุยืน แข็งแรงทุกวัน",
+    "imageUrl": "https://example.com/images/health-02.jpg",
+    "thumbnailUrl": "https://example.com/images/health-02-thumb.jpg",
+    "category": "occasion",
+    "occasionKey": "health",
+    "tags": ["health", "longevity", "blessing"],
+    "altText": "รูปอวยพรสุขภาพแข็งแรงอายุยืน",
+    "isActive": true,
+    "sortOrder": 2
   }
 ]
