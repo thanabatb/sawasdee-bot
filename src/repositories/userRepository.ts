@@ -9,6 +9,11 @@ interface UpsertUserInput {
   language?: string;
 }
 
+export async function getAllUserIds(): Promise<string[]> {
+  const snapshot = await collection.select("lineUserId").get();
+  return snapshot.docs.map((doc) => doc.id);
+}
+
 export async function upsertUser(input: UpsertUserInput): Promise<void> {
   await collection.doc(input.lineUserId).set(
     {
