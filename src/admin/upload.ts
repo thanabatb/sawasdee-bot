@@ -23,12 +23,10 @@ async function getNextSortOrder(category: TemplateCategory, key: string | number
   const snapshot = await db.collection("templates")
     .where("category", "==", category)
     .where(field, "==", key)
-    .orderBy("sortOrder", "desc")
-    .limit(1)
     .get();
 
-  if (snapshot.empty) return 1;
-  return (snapshot.docs[0].data().sortOrder as number) + 1;
+  const max = snapshot.docs.reduce((m, d) => Math.max(m, Number(d.data().sortOrder ?? 0)), 0);
+  return max + 1;
 }
 
 export interface UploadedTemplate {

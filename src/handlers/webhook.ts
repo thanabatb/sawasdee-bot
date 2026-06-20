@@ -26,28 +26,37 @@ async function handleEvent(event: webhook.Event): Promise<void> {
     return;
   }
 
-  if (!event.source || event.source.type !== "user" || !event.source.userId) {
+  if (!event.source || !event.replyToken) {
     return;
   }
 
-  if (!event.replyToken) {
+  const userId = event.source.type === "user" || event.source.type === "group" || event.source.type === "room"
+    ? event.source.userId
+    : undefined;
+
+  if (!userId) {
     return;
   }
-
-  const userId = event.source.userId;
   console.log("[line] text message", {
     userId,
     text: event.message.text,
     replyToken: event.replyToken.slice(0, 8),
   });
 
-  const profile = await client.getProfile(userId);
   try {
+    let profile;
+    if (event.source.type === "group" && event.source.groupId) {
+      profile = await client.getGroupMemberProfile(event.source.groupId, userId);
+    } else if (event.source.type === "room" && event.source.roomId) {
+      profile = await client.getRoomMemberProfile(event.source.roomId, userId);
+    } else {
+      profile = await client.getProfile(userId);
+    }
     await upsertUser({
       lineUserId: userId,
       displayName: profile.displayName,
       pictureUrl: profile.pictureUrl,
-      language: profile.language,
+      language: "language" in profile ? String(profile.language) : undefined,
     });
   } catch (error) {
     console.warn("[line] user upsert failed; continuing without persistence", error);

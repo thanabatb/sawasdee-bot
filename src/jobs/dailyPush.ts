@@ -18,6 +18,8 @@ async function sendDailyPush(): Promise<void> {
     return;
   }
 
+  const randomImage = images[Math.floor(Math.random() * images.length)];
+
   const dayNames: Record<string, string> = {
     Sun: "อาทิตย์", Mon: "จันทร์", Tue: "อังคาร", Wed: "พุธ",
     Thu: "พฤหัสบดี", Fri: "ศุกร์", Sat: "เสาร์",
@@ -27,7 +29,7 @@ async function sendDailyPush(): Promise<void> {
 
   const messages = [
     { type: "text" as const, text: `อรุณสวัสดิ์วัน${dayName}นะคะ ☀️\nขอให้สุขกาย สุขใจ ตลอดวันนะคะ 🙏` },
-    ...images,
+    randomImage,
   ];
 
   const userIds = await getAllUserIds();

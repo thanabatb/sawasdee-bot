@@ -300,7 +300,10 @@ export function renderAdminPage(): string {
       listEl.innerHTML = html;
     }
 
+    let currentGallery = null;
+
     function renderGallery(label, key, category) {
+      currentGallery = { label, key, category };
       const listEl = document.getElementById('template-list');
       const items = category === 'daily'
         ? allTemplates.filter(t => t.category === 'daily' && t.dayOfWeek === key)
@@ -314,16 +317,25 @@ export function renderAdminPage(): string {
         </div>
         <div class="gallery-grid">
           \${items.map(t => \`
-            <div class="gallery-card" id="card-\${t.id}">
+            <div class="gallery-card" id="card-\${t.id}" data-id="\${t.id}" data-image-url="\${t.imageUrl}">
               <img src="\${t.imageUrl}" onerror="this.style.background='#ddd'" loading="lazy">
-              <button class="del-btn" onclick="deleteTemplate('\${t.id}', '\${t.imageUrl}', '\${label}', \${JSON.stringify(key)}, '\${category}')">🗑️ ลบ</button>
+              <button class="del-btn">🗑️ ลบ</button>
             </div>
           \`).join('')}
         </div>
       \`;
+
+      listEl.querySelectorAll('.del-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const card = btn.closest('.gallery-card');
+          const id = card.dataset.id;
+          const imageUrl = card.dataset.imageUrl;
+          await deleteTemplate(id, imageUrl);
+        });
+      });
     }
 
-    async function deleteTemplate(id, imageUrl, label, key, category) {
+    async function deleteTemplate(id, imageUrl) {
       if (!confirm('ลบรูปนี้?')) return;
       try {
         const res = await fetch('/admin/templates/' + id, {
@@ -333,7 +345,7 @@ export function renderAdminPage(): string {
         });
         if (res.ok) {
           allTemplates = allTemplates.filter(t => t.id !== id);
-          renderGallery(label, key, category);
+          renderGallery(currentGallery.label, currentGallery.key, currentGallery.category);
         } else {
           alert('ลบไม่สำเร็จ');
         }
