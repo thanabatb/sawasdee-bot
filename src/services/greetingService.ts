@@ -72,7 +72,7 @@ export async function resolveMessagesFromText(text: string): Promise<messagingAp
     return getDailyGreetingMessages();
   }
 
-  if (normalized === "วันเกิด" || normalized === "birthday") {
+  if (normalized === "วันเกิด" || normalized === "birthday" || normalized === "อวยพร" || normalized === "รูปอวยพร") {
     return getOccasionGreetingMessages("birthday");
   }
 

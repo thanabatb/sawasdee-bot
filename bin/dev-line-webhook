@@ -24,6 +24,13 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v ngrok >/dev/null 2>&1; then
+  echo "ngrok is not installed. Run: brew install ngrok"
+  echo "Then authenticate: ngrok config add-authtoken <your-token>"
+  echo "Get your token at: https://dashboard.ngrok.com/get-started/your-authtoken"
+  exit 1
+fi
+
 cleanup() {
   if [ -n "${SERVER_PID:-}" ]; then
     kill "$SERVER_PID" 2>/dev/null || true
@@ -60,14 +67,14 @@ done
 
 echo "Starting public tunnel with ngrok..."
 rm -f "$TUNNEL_LOG"
-npx --yes localtunnel --port "$PORT" >"$TUNNEL_LOG" 2>&1 &
+ngrok http "$PORT" --log=stdout --log-format=json >"$TUNNEL_LOG" 2>&1 &
 TUNNEL_PID=$!
 
 echo "Waiting for tunnel URL..."
-for i in $(seq 1 60); do
-  TUNNEL_BASE_URL="$(sed -n 's/.*your url is: //p' "$TUNNEL_LOG" | tail -n 1)"
-  TUNNEL_URL="${TUNNEL_BASE_URL:+$TUNNEL_BASE_URL/webhook/line}"
-  if [ -n "$TUNNEL_URL" ]; then
+for i in $(seq 1 30); do
+  TUNNEL_BASE_URL="$(grep -o '"url":"https://[^"]*"' "$TUNNEL_LOG" 2>/dev/null | head -n 1 | grep -o 'https://[^"]*' || true)"
+  if [ -n "$TUNNEL_BASE_URL" ]; then
+    TUNNEL_URL="$TUNNEL_BASE_URL/webhook/line"
     echo
     echo "LINE Messaging API webhook endpoint:"
     echo "$TUNNEL_URL"
@@ -80,7 +87,8 @@ for i in $(seq 1 60); do
   fi
 
   if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
-    echo "localtunnel exited before providing a URL."
+    echo "ngrok exited unexpectedly. Check if authtoken is configured:"
+    echo "  ngrok config add-authtoken <your-token>"
     cat "$TUNNEL_LOG" 2>/dev/null || true
     exit 1
   fi
@@ -88,6 +96,6 @@ for i in $(seq 1 60); do
   sleep 1
 done
 
-echo "Timed out waiting for localtunnel URL."
+echo "Timed out waiting for ngrok URL."
 cat "$TUNNEL_LOG" 2>/dev/null || true
 exit 1
