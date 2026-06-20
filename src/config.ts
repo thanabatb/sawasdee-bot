@@ -26,5 +26,6 @@ export const config = {
     projectId: requireEnv("FIREBASE_PROJECT_ID"),
     clientEmail: requireEnv("FIREBASE_CLIENT_EMAIL"),
     privateKey: normalizePrivateKey(requireEnv("FIREBASE_PRIVATE_KEY")),
+    storageBucket: requireEnv("FIREBASE_STORAGE_BUCKET"),
   },
 } as const;

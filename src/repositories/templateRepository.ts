@@ -31,6 +31,17 @@ function mapTemplate(
   };
 }
 
+export async function getAllTemplates(): Promise<GreetingTemplate[]> {
+  const snapshot = await collection.get();
+  return snapshot.docs
+    .map(mapTemplate)
+    .sort((a, b) => a.category.localeCompare(b.category) || a.sortOrder - b.sortOrder);
+}
+
+export async function deleteTemplate(id: string): Promise<void> {
+  await collection.doc(id).delete();
+}
+
 export async function getDailyTemplates(dayOfWeek: number): Promise<GreetingTemplate[]> {
   const snapshot = await collection
     .where("category", "==", "daily")
