@@ -1,6 +1,6 @@
 import { messagingApi } from "@line/bot-sdk";
 
-import { buildGreetingCarousel, buildHelpMessage, buildTemplateImages } from "../line/messages.js";
+import { buildHelpMessage, buildOccasionSelectorCard, buildTemplateImages } from "../line/messages.js";
 import { getDailyTemplates, getOccasionTemplates } from "../repositories/templateRepository.js";
 import type { GreetingTemplate } from "../types.js";
 
@@ -41,12 +41,12 @@ function buildTemplateResponse(
     return [
       {
         type: "text",
-        text: "ตอนนี้ยังไม่มีรูปในหมวดนี้ ลองเพิ่ม template ใน Firestore ก่อน",
+        text: "ขณะนี้ยังไม่มีรูปในหมวดนี้นะคะ รอติดตามได้เลย 🙏",
       },
     ];
   }
 
-  return [buildGreetingCarousel(templates, heading), ...buildTemplateImages(templates).slice(0, 4)];
+  return buildTemplateImages(templates).slice(0, 4);
 }
 
 export async function getDailyGreetingMessages(): Promise<messagingApi.Message[]> {
@@ -72,8 +72,20 @@ export async function resolveMessagesFromText(text: string): Promise<messagingAp
     return getDailyGreetingMessages();
   }
 
-  if (normalized === "วันเกิด" || normalized === "birthday" || normalized === "อวยพร" || normalized === "รูปอวยพร") {
+  if (normalized === "รูปอวยพร" || normalized === "อวยพร") {
+    return [buildOccasionSelectorCard()];
+  }
+
+  if (normalized === "วันเกิด" || normalized === "birthday") {
     return getOccasionGreetingMessages("birthday");
+  }
+
+  if (normalized === "ร่ำรวย") {
+    return getOccasionGreetingMessages("rich");
+  }
+
+  if (normalized === "สุขภาพ") {
+    return getOccasionGreetingMessages("health");
   }
 
   return [buildHelpMessage()];

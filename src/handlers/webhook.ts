@@ -53,17 +53,29 @@ async function handleEvent(event: webhook.Event): Promise<void> {
     console.warn("[line] user upsert failed; continuing without persistence", error);
   }
 
-  const messages = await resolveMessagesFromText(event.message.text);
+  let messages;
+  try {
+    messages = await resolveMessagesFromText(event.message.text);
+  } catch (error) {
+    console.error("[line] failed to resolve messages", error);
+    messages = [{ type: "text" as const, text: "ขออภัยนะคะ ขณะนี้ระบบขัดข้องเล็กน้อย กรุณาลองใหม่อีกครั้งนะคะ 🙏" }];
+  }
+
   console.log("[line] replying", {
     userId,
     messageCount: messages.length,
     messageTypes: messages.map((message) => message.type),
   });
-  await client.replyMessage({
-    replyToken: event.replyToken,
-    messages,
-  });
-  console.log("[line] reply sent", { userId });
+
+  try {
+    await client.replyMessage({
+      replyToken: event.replyToken,
+      messages,
+    });
+    console.log("[line] reply sent", { userId });
+  } catch (error) {
+    console.error("[line] failed to send reply", { userId, error });
+  }
 }
 
 export const webhookHandler: RequestHandler = async (req, res, next) => {

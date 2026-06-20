@@ -53,9 +53,80 @@ export function buildTemplateImages(templates: GreetingTemplate[]): messagingApi
   }));
 }
 
+export function buildOccasionSelectorCard(): messagingApi.FlexMessage {
+  return {
+    type: "flex",
+    altText: "อยากได้รูปอวยพรแบบไหนคะ?",
+    contents: {
+      type: "bubble",
+      body: {
+        type: "box",
+        layout: "vertical",
+        spacing: "md",
+        contents: [
+          {
+            type: "text",
+            text: "รูปอวยพร 🙏",
+            weight: "bold",
+            size: "xl",
+            align: "center",
+          },
+          {
+            type: "text",
+            text: "อยากได้รูปอวยพรแบบไหนคะ?",
+            size: "sm",
+            color: "#888888",
+            align: "center",
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            spacing: "sm",
+            margin: "lg",
+            contents: [
+              {
+                type: "button",
+                action: {
+                  type: "message",
+                  label: "💰 ร่ำรวย",
+                  text: "ร่ำรวย",
+                },
+                style: "primary",
+                color: "#F5A623",
+                flex: 1,
+              },
+              {
+                type: "button",
+                action: {
+                  type: "message",
+                  label: "💪 สุขภาพ",
+                  text: "สุขภาพ",
+                },
+                style: "primary",
+                color: "#4CAF50",
+                flex: 1,
+              },
+            ],
+          },
+          {
+            type: "button",
+            action: {
+              type: "message",
+              label: "🎂 วันเกิด",
+              text: "วันเกิด",
+            },
+            style: "secondary",
+            margin: "sm",
+          },
+        ],
+      },
+    },
+  };
+}
+
 export function buildHelpMessage(): messagingApi.Message {
   return {
     type: "text",
-    text: "ส่งข้อความว่า \"สวัสดีวันนี้\" เพื่อรับรูปประจำวัน หรือส่ง \"วันเกิด\" เพื่อดูรูปอวยพรวันเกิด",
+    text: "กดปุ่มด้านล่างได้เลยนะคะ 😊\nหรือพิมพ์ \"สวัสดีวันนี้\" เพื่อรับรูปสวัสดี\nพิมพ์ \"รูปอวยพร\" เพื่อเลือกรูปอวยพร",
   };
 }
