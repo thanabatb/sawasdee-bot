@@ -1,6 +1,6 @@
 import { messagingApi } from "@line/bot-sdk";
 
-import { buildDailyPreviewCard, buildHelpMessage, buildOccasionSelectorCard, buildTemplateImages } from "../line/messages.js";
+import { buildImagePreviewCard, buildHelpMessage, buildOccasionSelectorCard, buildTemplateImages } from "../line/messages.js";
 import { getDailyTemplates, getOccasionTemplates } from "../repositories/templateRepository.js";
 import type { GreetingTemplate } from "../types.js";
 
@@ -52,16 +52,26 @@ export async function getDailyGreetingMessages(): Promise<messagingApi.Message[]
     return [{ type: "text", text: "ขณะนี้ยังไม่มีรูปในหมวดนี้นะคะ รอติดตามได้เลย 🙏" }];
   }
   const random = templates[Math.floor(Math.random() * templates.length)];
-  return [buildDailyPreviewCard(random)];
+  return [buildImagePreviewCard(random, `รูปสวัสดีวันนี้ — ${random.title}`)];
 }
+
+const occasionHeadings: Record<string, string> = {
+  birthday: "รูปอวยพรวันเกิด",
+  rich: "รูปอวยพรร่ำรวย",
+  health: "รูปอวยพรสุขภาพดี",
+};
 
 export async function getOccasionGreetingMessages(
   occasionKey: string,
 ): Promise<messagingApi.Message[]> {
   const templates = await getOccasionTemplates(occasionKey);
   console.log("[greeting] occasion request", { occasionKey, templateCount: templates.length });
-  const heading = occasionKey === "birthday" ? "รูปอวยพรวันเกิด" : "รูปอวยพรโอกาสพิเศษ";
-  return buildTemplateResponse(templates);
+  if (templates.length === 0) {
+    return [{ type: "text", text: "ขณะนี้ยังไม่มีรูปในหมวดนี้นะคะ รอติดตามได้เลย 🙏" }];
+  }
+  const random = templates[Math.floor(Math.random() * templates.length)];
+  const heading = occasionHeadings[occasionKey] ?? "รูปอวยพร";
+  return [buildImagePreviewCard(random, `${heading} — ${random.title}`)];
 }
 
 export async function resolveMessagesFromText(text: string): Promise<messagingApi.Message[]> {

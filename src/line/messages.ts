@@ -124,10 +124,10 @@ export function buildOccasionSelectorCard(): messagingApi.FlexMessage {
   };
 }
 
-export function buildDailyPreviewCard(template: GreetingTemplate): messagingApi.FlexMessage {
+export function buildImagePreviewCard(template: GreetingTemplate, altText?: string): messagingApi.FlexMessage {
   return {
     type: "flex",
-    altText: `รูปสวัสดีวันนี้ — ${template.title}`,
+    altText: altText ?? template.title,
     contents: {
       type: "bubble",
       hero: {
