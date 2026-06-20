@@ -1,5 +1,17 @@
 [
   {
+    "id": "sun-001",
+    "title": "สวัสดีวันอาทิตย์ พักผ่อนให้เต็มที่",
+    "imageUrl": "https://example.com/images/sunday-01.jpg",
+    "thumbnailUrl": "https://example.com/images/sunday-01-thumb.jpg",
+    "category": "daily",
+    "dayOfWeek": 0,
+    "tags": ["relax", "sunday", "morning"],
+    "altText": "รูปสวัสดีวันอาทิตย์",
+    "isActive": true,
+    "sortOrder": 1
+  },
+  {
     "id": "mon-001",
     "title": "สวัสดีวันจันทร์ สดใสรับสัปดาห์ใหม่",
     "imageUrl": "https://example.com/images/monday-01.jpg",
@@ -22,6 +34,66 @@
     "altText": "รูปสวัสดีวันจันทร์แนวธรรมชาติ",
     "isActive": true,
     "sortOrder": 2
+  },
+  {
+    "id": "tue-001",
+    "title": "สวัสดีวันอังคาร ขอให้วันนี้เป็นวันที่ดี",
+    "imageUrl": "https://example.com/images/tuesday-01.jpg",
+    "thumbnailUrl": "https://example.com/images/tuesday-01-thumb.jpg",
+    "category": "daily",
+    "dayOfWeek": 2,
+    "tags": ["morning", "blessing"],
+    "altText": "รูปสวัสดีวันอังคาร",
+    "isActive": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "wed-001",
+    "title": "สวัสดีวันพุธ กลางสัปดาห์แต่ใจยังสดใส",
+    "imageUrl": "https://example.com/images/wednesday-01.jpg",
+    "thumbnailUrl": "https://example.com/images/wednesday-01-thumb.jpg",
+    "category": "daily",
+    "dayOfWeek": 3,
+    "tags": ["midweek", "cheerful"],
+    "altText": "รูปสวัสดีวันพุธ",
+    "isActive": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "thu-001",
+    "title": "สวัสดีวันพฤหัสบดี ใกล้สุดสัปดาห์แล้ว",
+    "imageUrl": "https://example.com/images/thursday-01.jpg",
+    "thumbnailUrl": "https://example.com/images/thursday-01-thumb.jpg",
+    "category": "daily",
+    "dayOfWeek": 4,
+    "tags": ["morning", "motivation"],
+    "altText": "รูปสวัสดีวันพฤหัสบดี",
+    "isActive": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "fri-001",
+    "title": "สวัสดีวันศุกร์ สุขสันต์วันหยุดใกล้มาแล้ว",
+    "imageUrl": "https://example.com/images/friday-01.jpg",
+    "thumbnailUrl": "https://example.com/images/friday-01-thumb.jpg",
+    "category": "daily",
+    "dayOfWeek": 5,
+    "tags": ["friday", "happy", "weekend"],
+    "altText": "รูปสวัสดีวันศุกร์",
+    "isActive": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "sat-001",
+    "title": "สวัสดีวันเสาร์ สนุกกับวันหยุดให้เต็มที่",
+    "imageUrl": "https://example.com/images/saturday-01.jpg",
+    "thumbnailUrl": "https://example.com/images/saturday-01-thumb.jpg",
+    "category": "daily",
+    "dayOfWeek": 6,
+    "tags": ["saturday", "weekend", "relax"],
+    "altText": "รูปสวัสดีวันเสาร์",
+    "isActive": true,
+    "sortOrder": 1
   },
   {
     "id": "birthday-001",
