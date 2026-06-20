@@ -11,7 +11,6 @@ import { registerDailyPushJob, sendDailyPush } from "./jobs/dailyPush.js";
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 const app = express();
-app.use(express.json());
 
 app.get("/health", (_req, res) => {
   res.status(200).json({ ok: true });
@@ -58,7 +57,7 @@ app.get("/admin/templates", async (_req, res, next) => {
   }
 });
 
-app.delete("/admin/templates/:id", async (req, res, next) => {
+app.delete("/admin/templates/:id", express.json(), async (req, res, next) => {
   try {
     const { id } = req.params;
     const { imageUrl } = req.body as { imageUrl: string };

@@ -35,25 +35,20 @@ function todayInBangkok(): number {
 
 function buildTemplateResponse(
   templates: GreetingTemplate[],
-  heading: string,
 ): messagingApi.Message[] {
   if (templates.length === 0) {
-    return [
-      {
-        type: "text",
-        text: "ขณะนี้ยังไม่มีรูปในหมวดนี้นะคะ รอติดตามได้เลย 🙏",
-      },
-    ];
+    return [{ type: "text", text: "ขณะนี้ยังไม่มีรูปในหมวดนี้นะคะ รอติดตามได้เลย 🙏" }];
   }
 
-  return buildTemplateImages(templates).slice(0, 4);
+  const random = templates[Math.floor(Math.random() * templates.length)];
+  return buildTemplateImages([random]);
 }
 
 export async function getDailyGreetingMessages(): Promise<messagingApi.Message[]> {
   const dayOfWeek = todayInBangkok();
   const templates = await getDailyTemplates(dayOfWeek);
   console.log("[greeting] daily request", { dayOfWeek, templateCount: templates.length });
-  return buildTemplateResponse(templates, `รูปสวัสดี${dayNames[dayOfWeek]}`);
+  return buildTemplateResponse(templates);
 }
 
 export async function getOccasionGreetingMessages(
@@ -62,7 +57,7 @@ export async function getOccasionGreetingMessages(
   const templates = await getOccasionTemplates(occasionKey);
   console.log("[greeting] occasion request", { occasionKey, templateCount: templates.length });
   const heading = occasionKey === "birthday" ? "รูปอวยพรวันเกิด" : "รูปอวยพรโอกาสพิเศษ";
-  return buildTemplateResponse(templates, heading);
+  return buildTemplateResponse(templates);
 }
 
 export async function resolveMessagesFromText(text: string): Promise<messagingApi.Message[]> {
