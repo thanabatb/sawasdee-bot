@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Deploy to Cloud Run
+# Usage: bash bin/deploy
+set -euo pipefail
+
+PROJECT=$(gcloud config get-value project)
+REGION="asia-southeast1"
+SERVICE="sawasdee-bot"
+IMAGE="$REGION-docker.pkg.dev/$PROJECT/$SERVICE/$SERVICE"
+
+echo "Deploying to project: $PROJECT"
+echo "Region: $REGION"
+echo ""
+
+# Create Artifact Registry repo if it doesn't exist
+if ! gcloud artifacts repositories describe "$SERVICE" --location="$REGION" --project="$PROJECT" &>/dev/null; then
+  echo "Creating Artifact Registry repository..."
+  gcloud artifacts repositories create "$SERVICE" \
+    --repository-format=docker \
+    --location="$REGION" \
+    --project="$PROJECT"
+fi
+
+# Build and push image
+echo "Building and pushing image..."
+gcloud builds submit \
+  --tag "$IMAGE" \
+  --project="$PROJECT"
+
+# Deploy to Cloud Run
+echo "Deploying to Cloud Run..."
+gcloud run deploy "$SERVICE" \
+  --image "$IMAGE" \
+  --platform managed \
+  --region "$REGION" \
+  --allow-unauthenticated \
+  --port 8080 \
+  --memory 512Mi \
+  --min-instances 0 \
+  --max-instances 3 \
+  --set-secrets "LINE_CHANNEL_ACCESS_TOKEN=LINE_CHANNEL_ACCESS_TOKEN:latest,\
+LINE_CHANNEL_SECRET=LINE_CHANNEL_SECRET:latest,\
+FIREBASE_PROJECT_ID=FIREBASE_PROJECT_ID:latest,\
+FIREBASE_CLIENT_EMAIL=FIREBASE_CLIENT_EMAIL:latest,\
+FIREBASE_PRIVATE_KEY=FIREBASE_PRIVATE_KEY:latest,\
+FIREBASE_STORAGE_BUCKET=FIREBASE_STORAGE_BUCKET:latest,\
+ADMIN_SECRET=ADMIN_SECRET:latest" \
+  --set-env-vars "PORT=8080,NODE_ENV=production" \
+  --project="$PROJECT"
+
+echo ""
+echo "Deploy complete! Your bot URL:"
+gcloud run services describe "$SERVICE" --region="$REGION" --project="$PROJECT" \
+  --format="value(status.url)"
+echo ""
+echo "Next: paste that URL + /webhook/line into LINE Developers console."
