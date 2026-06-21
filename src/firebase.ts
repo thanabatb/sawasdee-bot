@@ -3,16 +3,26 @@ import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 import { config } from "./config.js";
 
+const useServiceAccount =
+  config.firebase.clientEmail && config.firebase.privateKey;
+
 const app = getApps().length
   ? getApps()[0]
-  : initializeApp({
-      credential: cert({
-        projectId: config.firebase.projectId,
-        clientEmail: config.firebase.clientEmail,
-        privateKey: config.firebase.privateKey,
-      }),
-      storageBucket: config.firebase.storageBucket,
-    });
+  : initializeApp(
+      useServiceAccount
+        ? {
+            credential: cert({
+              projectId: config.firebase.projectId,
+              clientEmail: config.firebase.clientEmail,
+              privateKey: config.firebase.privateKey,
+            }),
+            storageBucket: config.firebase.storageBucket,
+          }
+        : {
+            projectId: config.firebase.projectId,
+            storageBucket: config.firebase.storageBucket,
+          },
+    );
 
 export const db = getFirestore(app);
 export const storage = getStorage(app);
