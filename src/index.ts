@@ -25,7 +25,7 @@ app.use("/admin", (req, res, next) => {
   if (scheme === "Basic" && credentials) {
     const decoded = Buffer.from(credentials, "base64").toString();
     const password = decoded.split(":")[1];
-    if (password === config.adminSecret) return next();
+    if (password === config.adminSecret.trim()) return next();
   }
   res.setHeader("WWW-Authenticate", 'Basic realm="Admin"');
   res.status(401).send("Unauthorized");
