@@ -18,6 +18,19 @@ app.get("/health", (_req, res) => {
 
 app.post("/webhook/line", lineMiddleware, webhookHandler);
 
+app.use("/admin", (req, res, next) => {
+  if (!config.adminSecret) return next();
+  const auth = req.headers.authorization ?? "";
+  const [scheme, credentials] = auth.split(" ");
+  if (scheme === "Basic" && credentials) {
+    const decoded = Buffer.from(credentials, "base64").toString();
+    const password = decoded.split(":")[1];
+    if (password === config.adminSecret) return next();
+  }
+  res.setHeader("WWW-Authenticate", 'Basic realm="Admin"');
+  res.status(401).send("Unauthorized");
+});
+
 app.get("/admin", (_req, res) => {
   res.send(renderAdminPage());
 });
